@@ -21,14 +21,19 @@ Python 通过 socket 模块提供访问操作系统 socket 库的接口。建立
 对于一个客户端来说，建立一个socket 需要两个步骤：
 
 - 建立一个实际的socket对象
+
   - 通信协议 ： 指明用什么协议来传输数据
+
     - IPv4 ( AF_INET )
     - IPv6
     - IPX/SPX(NetWare)
     - AFP(Apple文件共享)
+
   - 协议家族 ： 定义数据如何被传输
+
     - TCP ( SOCK_STREAM )
     - UDP ( SOCK_DGRAM )
+
 - 需要把它连接到远程服务器上
 
 对于TCP通信，建立一个 socket 连接，一般用类似这样的代码：
@@ -51,3 +56,26 @@ Python 通过 socket 模块提供访问操作系统 socket 库的接口。建立
 
 .. attention::
    C语言的 ``connect()`` 函数需要远程机器的IP地址，在Python中，socket对象的 ``connect()`` 函数会根据需要得用DNS把域名自动转换为IP地址，但是对端口号则不是这样。
+
+寻找端口
+^^^^^^^^^^^^^^^^^
+Python 的 socket 库包含一个 ``getservbyname()`` 的函数，它可以自动查询服务器端口号。在UNIX系统中，可以 ``/etc/services`` 目录下找到这个列表。
+
+为了查询这个列表，需要两个参数：协议名和端口名。端口名是一个字符串，对应相应的端口，如 ``http`` 端口名对应 ``80`` 这个端口号。
+
+程序： 
+
+.. literalinclude:: ../codes/ch2/connect2.py
+   :linenos:
+
+.. attention::
+   此程序在Windows下会报错。列表文件，只有*nux下才会存在。
+
+从socket获取信息
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+一旦建立了连接，就可以从那里得到一些有用的信息。下面这个例子演示了这些功能 [#]_ 。
+
+.. rubric:: Footnotes
+
+.. [#] Windows下执行本程序会报错。
+
