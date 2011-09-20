@@ -50,7 +50,7 @@ except socket.error, e:
     sys.exit(1)
 
 while 1:
-    ## 获取数据失败时异常
+    ## 接收数据失败时异常
     try:
         buf = s.recv(2048)
     except socket.error, e:

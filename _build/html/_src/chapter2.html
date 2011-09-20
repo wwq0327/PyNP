@@ -53,8 +53,11 @@
 <li><a class="reference internal" href="#id7">处理错误</a><ul>
 <li><a class="reference internal" href="#id8">socket 异常</a></li>
 <li><a class="reference internal" href="#id9">遗漏的错误</a></li>
+<li><a class="reference internal" href="#id10">文件对象引起的错误</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#udp">使用 UDP</a></li>
+<li><a class="reference internal" href="#id11">总结</a></li>
 </ul>
 </li>
 </ul>
@@ -236,7 +239,7 @@
 </div>
 <div class="section" id="id4">
 <h3>从socket获取信息<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
-<p>一旦建立了连接，就可以从那里得到一些有用的信息。下面这个例子演示了这些功能 <a class="footnote-reference" href="#id10" id="id5">[1]</a> 。</p>
+<p>一旦建立了连接，就可以从那里得到一些有用的信息。下面这个例子演示了这些功能 <a class="footnote-reference" href="#id12" id="id5">[1]</a> 。</p>
 <div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -422,7 +425,7 @@
     <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
-    <span class="c">## 获取数据失败时异常</span>
+    <span class="c">## 接收数据失败时异常</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">buf</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
@@ -448,14 +451,170 @@
 </div>
 <div class="section" id="id9">
 <h3>遗漏的错误<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id10">
+<h3>文件对象引起的错误<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="udp">
+<h2>使用 UDP<a class="headerlink" href="#udp" title="Permalink to this headline">¶</a></h2>
+<p>UDP 通信几乎不使用文件类对象。下面是一个 UDP 客户端：</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    udp.py</span>
+<span class="sd">    ~~~~~~~~~~~~~~~~~~~~</span>
+<span class="sd">    </span>
+<span class="sd">    :date: 2011-09-20</span>
+<span class="sd">    :from: Python Network Programming</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">socket</span><span class="o">,</span> <span class="nn">sys</span>
+
+<span class="n">host</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">textport</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">textport</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+    <span class="n">port</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">getservbyname</span><span class="p">(</span><span class="n">textport</span><span class="p">,</span> <span class="s">&#39;udp&#39;</span><span class="p">)</span>
+
+<span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+<span class="k">print</span> <span class="s">&quot;Enter data to transmit: &quot;</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+<span class="n">s</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;Looking for replies; press Ctrl-C or Ctrl-Break to stop.&quot;</span>
+<span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="n">buf</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">):</span>
+        <span class="k">break</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>提供两个参数，一个主机名，一个服务器端口。因为不知服务何时回应，所以会进出一个无限循环。</p>
+<p>与TCP客户端的区别：</p>
+<ul class="simple">
+<li>调用 <tt class="docutils literal"><span class="pre">SOCK_DGRAM</span></tt></li>
+<li>使用 <tt class="docutils literal"><span class="pre">UDP</span></tt> 通信</li>
+<li>寻找端口号用的是 <tt class="docutils literal"><span class="pre">udp</span></tt></li>
+<li>程序没办法探测到服务器什么时候发送完整数据。</li>
+</ul>
+<p>有时， 使用UDP可根本不用调用 <tt class="docutils literal"><span class="pre">connect()</span></tt> ，这个例子：</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    udptime.py</span>
+<span class="sd">    ~~~~~~~~~~~~~~~~~~~~</span>
+<span class="sd">    </span>
+<span class="sd">    :date: 2011-09-20</span>
+<span class="sd">    :from: Python Network Programming</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">socket</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">struct</span><span class="o">,</span> <span class="nn">time</span>
+
+<span class="n">hostname</span> <span class="o">=</span> <span class="s">&#39;time.nist.gov&#39;</span>
+<span class="n">port</span> <span class="o">=</span> <span class="mi">37</span>
+
+<span class="n">host</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostbyname</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+
+<span class="k">print</span> <span class="s">&quot;Looking for replines; press Ctrl-C to stop.&quot;</span>
+<span class="n">buf</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">2048</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Wrong-sized reply </span><span class="si">%d</span><span class="s">: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">),</span> <span class="n">buf</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">secs</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;!I&quot;</span><span class="p">,</span> <span class="n">buf</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">secs</span> <span class="o">-=</span> <span class="mi">2208988800</span>
+<span class="k">print</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">secs</span><span class="p">))</span>
+</pre></div>
+</td></tr></table></div>
+<p>这个程序是一个 <tt class="docutils literal"><span class="pre">RFC868</span></tt> 上定义的简单时间协议的示范。</p>
+</div>
+<div class="section" id="id11">
+<h2>总结<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>网络通信基本接口是 socket， 它扩展了操作系统基本 I/O 到网络通信。</li>
+<li>socket 可通过 <tt class="docutils literal"><span class="pre">socket()</span></tt> 函数来建立， 通过 <tt class="docutils literal"><span class="pre">connect()</span></tt> 来连接。</li>
+<li>得到socket，可以确定本地和远程端点的IP地址和端口号。</li>
+<li>socket 对不同的协议来说都是一种通用的接口，它可以处理 TCP 和 UDP 通信。</li>
+<li>使用 <tt class="docutils literal"><span class="pre">shutdown()</span></tt> 可以确保当有写错误发生时，能获得提醒。</li>
+<li>Python提供两种和 socket 工作的接口： 用于 UDP 和高级的 TCP 目的的标准 socket 接口，以及用于简单 TCP 通信的文件类接口。</li>
+</ul>
 <p class="rubric">Footnotes</p>
-<table class="docutils footnote" frame="void" id="id10" rules="none">
+<table class="docutils footnote" frame="void" id="id12" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id5">[1]</a></td><td>Windows下执行本程序会报错。</td></tr>
 </tbody>
 </table>
-</div>
 </div>
 </div>
 
