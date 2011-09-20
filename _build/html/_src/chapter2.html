@@ -1,0 +1,186 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>第二章 网络客户端 &mdash; PyNP v1 documentation</title>
+    <link rel="stylesheet" href="../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="PyNP v1 documentation" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">PyNP v1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">第二章 网络客户端</a><ul>
+<li><a class="reference internal" href="#socket">理解 socket</a></li>
+<li><a class="reference internal" href="#id2">建立 socket</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/_src/chapter2.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="id1">
+<h1>第二章 网络客户端<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>学习如何在客户端实现一个应用程序协议，或是修改，扩展一个已经存在的Python模块。</p>
+<div class="section" id="socket">
+<h2>理解 socket<a class="headerlink" href="#socket" title="Permalink to this headline">¶</a></h2>
+<p>socket 是操作系统中 I/O 系统的延伸部分，它可以使进程序和机器之间的通信成为可能。</p>
+<p>以前经常使用的 socket ，最早起源于 BSD UNIX 类的操作系统。在Unix系统上，比如BSD，有一些现有的，和文件描述符一起工作的系统调用，其中包括 <tt class="docutils literal"><span class="pre">open()</span></tt> / <tt class="docutils literal"><span class="pre">read()</span></tt> / <tt class="docutils literal"><span class="pre">write()</span></tt> 和 <tt class="docutils literal"><span class="pre">close()</span></tt> 。</p>
+<p>把对网络的支持加入操作系统，是以一种扩展现有文件描述符结构的方法来实现。新的系统周用被加入并和 socket 一起工作，而很多的系统调用同样能和 socket 一起工作。因此，一个 socket 允许你使用标准的操作系统和其它计算机，以及你自己机器上的不同进程来通信。</p>
+<p>在某些方面，socket 可以被看成一个标准的文件描述符。然后，socket 的确存在一些不同的工作方式。最明显的是建立 socket 的方法。文件调用使用 <tt class="docutils literal"><span class="pre">open()</span></tt> 来打开，而 socket 是通过 <tt class="docutils literal"><span class="pre">socket()</span></tt> 函数来建立的，并且还需要另外的调用来连接和激活他们。``recv()`` 和 <tt class="docutils literal"><span class="pre">send()</span></tt> 这两个系统调用和 <tt class="docutils literal"><span class="pre">read()</span></tt> 和 <tt class="docutils literal"><span class="pre">write()</span></tt> 极为相似。``send()`` 和 <tt class="docutils literal"><span class="pre">recv()</span></tt> 调用提供了 socket 额外特有的功能。</p>
+<p>Python 通过 socket 模块提供访问操作系统 socket 库的接口。建立socket 的时候，只需要调用这个模块的函数和常量。</p>
+</div>
+<div class="section" id="id2">
+<h2>建立 socket<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>对于一个客户端来说，建立一个socket 需要两个步骤：</p>
+<ul>
+<li><p class="first">建立一个实际的socket对象
+- 通信协议 ： 指明用什么协议来传输数据</p>
+<blockquote>
+<div><ul class="simple">
+<li>IPv4 ( AF_INET )</li>
+<li>IPv6</li>
+<li>IPX/SPX(NetWare)</li>
+<li>AFP(Apple文件共享)</li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li>协议家族 ： 定义数据如何被传输
+- TCP ( SOCK_STREAM )
+- UDP ( SOCK_DGRAM )</li>
+</ul>
+</li>
+<li><p class="first">需要把它连接到远程服务器上</p>
+</li>
+</ul>
+<p>对于TCP通信，建立一个 socket 连接，一般用类似这样的代码：</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>连接 socket ，一般需要提供一个 tuple，它包含远程主机名或IP地址和远程端口，连接一个socket 一般用类似这样的代码：</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s">&quot;www.example.com&quot;</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>下面的程序建立一个连接并马上终止。</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    connect.py</span>
+<span class="sd">    ~~~~~~~~~~~~~~~~~~~~</span>
+<span class="sd">    </span>
+<span class="sd">    :date: 2011-09-20</span>
+<span class="sd">    :from: Python Network Programming</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">socket</span>
+
+<span class="k">print</span> <span class="s">&quot;Creating socket...&quot;</span><span class="p">,</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;done.&#39;</span>
+
+<span class="k">print</span> <span class="s">&quot;Connecting to remote host...&quot;</span><span class="p">,</span>
+<span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s">&quot;www.google.com&quot;</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
+<span class="k">print</span> <span class="s">&quot;done.&quot;</span>
+</pre></div>
+</td></tr></table></div>
+<p>连接到 <tt class="docutils literal"><span class="pre">www.google.com</span></tt> 上的Web服务器，接着打印状态信息，最后终止。</p>
+<div class="admonition attention">
+<p class="first admonition-title">Attention</p>
+<p class="last">C语言的 <tt class="docutils literal"><span class="pre">connect()</span></tt> 函数需要远程机器的IP地址，在Python中，socket对象的 <tt class="docutils literal"><span class="pre">connect()</span></tt> 函数会根据需要得用DNS把域名自动转换为IP地址，但是对端口号则不是这样。</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../index.html">PyNP v1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, wwq0327.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
