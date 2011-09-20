@@ -14,6 +14,7 @@ Contents:
    _src/intro.rst
    _src/chapter1.rst
    _src/chapter2.rst
+   _src/chapter3.rst
 
 Indices and tables
 ==================
