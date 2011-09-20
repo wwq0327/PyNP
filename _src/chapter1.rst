@@ -129,6 +129,55 @@ Python会自动检查错误，并在有错误发生时产生异常，如果给�
 Python会检测到错误并产生一个 ``socket.gaierror`` 异常。因为程序没有处理异常，修改之后：
 
 .. literalinclude:: ../codes/ch1/gopherclient2.py
+   :language: python
    :linenos:
 
 这样在尝试连接到一个不存在的服务器时会得到比较友好的错误信息。
+
+.. note::
+
+   sendall()函数能一次性发送所有数据，如果有错误，它会产生异常;否则，表明信息发送成功。
+
+文件对象
+'''''''''''''''''''''''
+
+Python 程序员会熟悉文件对象的方法： ``readline()`` 、 ``write()`` 、 ``read()`` 等。Socket不提供类似的接口，但提供了一个 ``makefile()`` 函数来生成供你使用的文件类对象。下面功能相同的例子，则是使用文件类接口重写：
+
+.. literalinclude:: ../codes/ch1/gopherclient3.py
+   :linenos:
+
+基本服务器操作
+'''''''''''''''''''''''''
+
+用Python编写服务器程序同样很简单，例如：
+
+.. literalinclude:: ../codes/ch1/server.py
+   :linenos:
+
+使用方法：
+
+- 服务器端： ``python server.py``
+- 客户端： ``telnet localhost 51423`` 
+- 客户端输入信息后会得到相应的字符数量回馈。
+
+在Ubuntu下，看起来像这样：
+::
+
+   wyatt@wyatt-desktop:~/git/PyNP$ telnet localhost 51432
+   Trying 127.0.0.1...
+   Connected to localhost.
+   Escape character is '^]'.
+   Please enter a string: hello
+   You entered 5 characters.
+   Connection closed by foreign host.
+
+高级接口
+^^^^^^^^^^^^^^^^^
+
+总结
+~~~~~~~~~~
+
+- TCP/IP 协议可以用于多种不同的传输。每一个终端是靠唯一的IP地址和端口号来区分的。
+- 服务器通过一些事先知道的端口来侦听连接。当一个客户端连接时，它的操作系统通常会选择一个事先不知道的端口号。
+- 有两种常的数据传输协议： TCP， 可能提供高可靠性和完整的会话;UDP， 用于小且简短但是快速的会话。
+- 大多数人用Python编写网络程序，要么自己设计协议， 要么用一些内置的模块来实现一些已经存在的协议。对那些自己设计协议的人来说，Python提供了全面的socket接口，而C语言网络程序员会觉得很熟悉。

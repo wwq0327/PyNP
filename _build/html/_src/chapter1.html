@@ -61,10 +61,14 @@
 <li><a class="reference internal" href="#id10">底层接口</a><ul>
 <li><a class="reference internal" href="#id11">基本客户端操作</a></li>
 <li><a class="reference internal" href="#id12">错误和异常</a></li>
+<li><a class="reference internal" href="#id13">文件对象</a></li>
+<li><a class="reference internal" href="#id14">基本服务器操作</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#id15">高级接口</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#id16">总结</a></li>
 </ul>
 </li>
 </ul>
@@ -350,8 +354,161 @@ socket.gaierror: [Errno -5] No address associated with hostname</pre>
 </pre></div>
 </td></tr></table></div>
 <p>这样在尝试连接到一个不存在的服务器时会得到比较友好的错误信息。</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">sendall()函数能一次性发送所有数据，如果有错误，它会产生异常;否则，表明信息发送成功。</p>
 </div>
 </div>
+<div class="section" id="id13">
+<h4>文件对象<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h4>
+<p>Python 程序员会熟悉文件对象的方法： <tt class="docutils literal"><span class="pre">readline()</span></tt> 、 <tt class="docutils literal"><span class="pre">write()</span></tt> 、 <tt class="docutils literal"><span class="pre">read()</span></tt> 等。Socket不提供类似的接口，但提供了一个 <tt class="docutils literal"><span class="pre">makefile()</span></tt> 函数来生成供你使用的文件类对象。下面功能相同的例子，则是使用文件类接口重写：</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    gopherclient3.py</span>
+<span class="sd">    ~~~~~~~~~~~~~~~~~~~~</span>
+<span class="sd">    </span>
+<span class="sd">    :date: 2011-09-20</span>
+<span class="sd">    :from: Python Network Programming</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">socket</span><span class="o">,</span> <span class="nn">sys</span>
+
+<span class="n">port</span> <span class="o">=</span> <span class="mi">70</span>
+<span class="n">host</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">filename</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+<span class="n">fd</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">makefile</span><span class="p">(</span><span class="s">&#39;rw&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename</span><span class="o">+</span><span class="s">&#39;</span><span class="se">\r\n</span><span class="s">&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="id14">
+<h4>基本服务器操作<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
+<p>用Python编写服务器程序同样很简单，例如：</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    server.py</span>
+<span class="sd">    ~~~~~~~~~~~~~~~~~~~~</span>
+<span class="sd">    </span>
+<span class="sd">    :date: 2011-09-20</span>
+<span class="sd">    :from: Python Network Programming</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">socket</span>
+
+<span class="n">host</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+<span class="n">port</span> <span class="o">=</span> <span class="mi">51423</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+<span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&quot;Server is running on port </span><span class="si">%d</span><span class="s">; press Ctrl-C to terminate.&quot;</span> \
+      <span class="o">%</span> <span class="n">port</span>
+<span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="n">clientsock</span><span class="p">,</span> <span class="n">clientaddr</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+    <span class="n">clientfile</span> <span class="o">=</span> <span class="n">clientsock</span><span class="o">.</span><span class="n">makefile</span><span class="p">(</span><span class="s">&#39;rw&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">clientfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;Please enter a string: &quot;</span><span class="p">)</span>
+    <span class="n">line</span> <span class="o">=</span> <span class="n">clientfile</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">clientfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;You entered </span><span class="si">%d</span><span class="s"> characters.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+    <span class="n">clientfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">clientsock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<p>使用方法：</p>
+<ul class="simple">
+<li>服务器端： <tt class="docutils literal"><span class="pre">python</span> <span class="pre">server.py</span></tt></li>
+<li>客户端： <tt class="docutils literal"><span class="pre">telnet</span> <span class="pre">localhost</span> <span class="pre">51423</span></tt></li>
+<li>客户端输入信息后会得到相应的字符数量回馈。</li>
+</ul>
+<p>在Ubuntu下，看起来像这样：</p>
+<div class="highlight-python"><pre>wyatt@wyatt-desktop:~/git/PyNP$ telnet localhost 51432
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+Please enter a string: hello
+You entered 5 characters.
+Connection closed by foreign host.</pre>
+</div>
+</div>
+</div>
+<div class="section" id="id15">
+<h3>高级接口<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="id16">
+<h2>总结<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>TCP/IP 协议可以用于多种不同的传输。每一个终端是靠唯一的IP地址和端口号来区分的。</li>
+<li>服务器通过一些事先知道的端口来侦听连接。当一个客户端连接时，它的操作系统通常会选择一个事先不知道的端口号。</li>
+<li>有两种常的数据传输协议： TCP， 可能提供高可靠性和完整的会话;UDP， 用于小且简短但是快速的会话。</li>
+<li>大多数人用Python编写网络程序，要么自己设计协议， 要么用一些内置的模块来实现一些已经存在的协议。对那些自己设计协议的人来说，Python提供了全面的socket接口，而C语言网络程序员会觉得很熟悉。</li>
+</ul>
 </div>
 </div>
 
