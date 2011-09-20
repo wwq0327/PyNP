@@ -101,4 +101,13 @@ Python 提供了访问底层操作系统 Socket 接口的全部方法，需要�
 .. literalinclude:: ../codes/ch1/gopherclient.py
    :linenos:
 
+这是在现实世界中能找到的、可能运行的网络协议实现的最小程序。它实现的是 Gopher 协议，一种Web出现之前在Internet上非常流行的协议。这个程序需要两个命令行参数：主机名和文件名，实现从主机上请求相关文档的功能。
 
+它通过调用 ``socket.socket()`` 来建立一个 Socket 。参数告诉系统需要一个Internet socket来进行TCP通信。接着，程序连接远程主机并提供文件名。最后获得响应后，在屏幕上打印下来。
+
+使用：
+::
+
+    python gopherclient.py quux.org /
+
+你将得到Gopher服务器根目录的文件列表。
