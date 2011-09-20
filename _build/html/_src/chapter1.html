@@ -499,6 +499,50 @@ Connection closed by foreign host.</pre>
 </div>
 <div class="section" id="id15">
 <h3>高级接口<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<p>使用Python已提供的协议来解决编程问题，例如：</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    download.py</span>
+<span class="sd">    ~~~~~~~~~~~~~~~~~~~~</span>
+<span class="sd">    </span>
+<span class="sd">    :date: 2011-09-20</span>
+<span class="sd">    :from: Python Network Programming</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">urllib</span><span class="o">,</span> <span class="nn">sys</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="n">buf</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">):</span>
+        <span class="k">break</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>使用方法：</p>
+<div class="highlight-python"><pre>python download.py http://mirrors.163.com/debian/ls-lR.gz | gunzip |more</pre>
+</div>
+<p>这个命令可以解开压缩数据并发送。</p>
 </div>
 </div>
 <div class="section" id="id16">

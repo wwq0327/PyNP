@@ -174,6 +174,18 @@ Python 程序员会熟悉文件对象的方法： ``readline()`` 、 ``write()``
 高级接口
 ^^^^^^^^^^^^^^^^^
 
+使用Python已提供的协议来解决编程问题，例如：
+
+.. literalinclude:: ../codes/ch1/download.py
+   :linenos:
+
+使用方法：
+::
+
+   python download.py http://mirrors.163.com/debian/ls-lR.gz | gunzip |more
+
+这个命令可以解开压缩数据并发送。
+
 总结
 ~~~~~~~~~~
 
