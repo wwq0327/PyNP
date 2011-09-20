@@ -7,9 +7,14 @@
     
     :date: 2011-09-20
     :from: Python Network Programming
+    :usage: Python gopherclient.py quux.org /
 """
 
 import socket, sys
+
+if len(sys.argv) != 3:
+    print __doc__
+    sys.exit()
 
 port = 70
 host = sys.argv[1]
