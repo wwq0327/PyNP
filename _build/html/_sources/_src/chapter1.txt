@@ -111,3 +111,24 @@ Python 提供了访问底层操作系统 Socket 接口的全部方法，需要�
     python gopherclient.py quux.org /
 
 你将得到Gopher服务器根目录的文件列表。
+
+错误和异常
+'''''''''''''''''''''
+
+Python会自动检查错误，并在有错误发生时产生异常，如果给出一个不存在的主机名，如：
+::
+
+    wyatt@wyatt-desktop:~/git/PyNP/codes/ch1$ python gopherclient.py quuxxxxxxxxxxx.org /
+    Traceback (most recent call last):
+      File "gopherclient.py", line 24, in <module>
+        s.connect((host, port))
+      File "/usr/lib/python2.7/socket.py", line 224, in meth
+        return getattr(self._sock,name)(*args)
+    socket.gaierror: [Errno -5] No address associated with hostname
+
+Python会检测到错误并产生一个 ``socket.gaierror`` 异常。因为程序没有处理异常，修改之后：
+
+.. literalinclude:: ../codes/ch1/gopherclient2.py
+   :linenos:
+
+这样在尝试连接到一个不存在的服务器时会得到比较友好的错误信息。
