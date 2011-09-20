@@ -8,7 +8,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
     <title>第一章 客户/服务器网络介绍 &mdash; PyNP v1 documentation</title>
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -37,7 +37,60 @@
              accesskey="P">previous</a> |</li>
         <li><a href="../index.html">PyNP v1 documentation</a> &raquo;</li> 
       </ul>
-    </div>  
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">第一章 客户/服务器网络介绍</a><ul>
+<li><a class="reference internal" href="#tcp">理解 TCP 基础</a><ul>
+<li><a class="reference internal" href="#id2">寻址</a></li>
+<li><a class="reference internal" href="#id3">可靠性</a></li>
+<li><a class="reference internal" href="#id4">路由</a></li>
+<li><a class="reference internal" href="#id5">安全</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id6">使用客户/服务器模式</a><ul>
+<li><a class="reference internal" href="#id7">服务器端端口号</a></li>
+<li><a class="reference internal" href="#id8">客户端端口号</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#udp">理UDP</a></li>
+<li><a class="reference internal" href="#id9">理解物理传输和以太网</a></li>
+<li><a class="reference internal" href="#python">Python 网络编程</a><ul>
+<li><a class="reference internal" href="#id10">底层接口</a><ul>
+<li><a class="reference internal" href="#id11">基本客户端操作</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="intro.html"
+                        title="previous chapter">概述</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/_src/chapter1.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
     <div class="document">
       <div class="documentwrapper">
@@ -113,55 +166,91 @@
 <li>只传送很少一部分数据。UDP的限制是一个信息包不超过 <strong>64K</strong> ，通常人们只用UDP传送 <strong>1K</strong> 以下的数据。</li>
 </ul>
 </div>
+<div class="section" id="id9">
+<h2>理解物理传输和以太网<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p>TCP/IP有一个优点，就是可以在不同的物理网络硬件之间传送数据。比较常见的：</p>
+<ul class="simple">
+<li>以太网</li>
+<li>端对端(PPP, Peer-Peer Protocol)</li>
+<li>令牌环网络</li>
+<li>DSL连接</li>
+<li>Cable Modems连接</li>
+<li>人造卫星连接</li>
+<li>移动电话以及如T1那样的专线连接</li>
+</ul>
+</div>
+<div class="section" id="python">
+<h2>Python 网络编程<a class="headerlink" href="#python" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id10">
+<h3>底层接口<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<p>Python 提供了访问底层操作系统 Socket 接口的全部方法，需要的时候这些接口可能为你提供灵活而强有力的功能。</p>
+<div class="section" id="id11">
+<h4>基本客户端操作<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
+<p>一个简单的Python客户端程序：</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    gopherclient.py</span>
+<span class="sd">    ~~~~~~~~~~~~~~~~~~~~</span>
+<span class="sd">    </span>
+<span class="sd">    :date: 2011-09-20</span>
+<span class="sd">    :from: Python Network Programming</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">socket</span><span class="o">,</span> <span class="nn">sys</span>
+
+<span class="n">port</span> <span class="o">=</span> <span class="mi">70</span>
+<span class="n">host</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">filename</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+
+<span class="n">s</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">filename</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\r\n</span><span class="s">&quot;</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="n">buf</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">):</span>
+        <span class="k">break</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+    
+</pre></div>
+</td></tr></table></div>
+</div>
+</div>
+</div>
 </div>
 
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">第一章 客户/服务器网络介绍</a><ul>
-<li><a class="reference internal" href="#tcp">理解 TCP 基础</a><ul>
-<li><a class="reference internal" href="#id2">寻址</a></li>
-<li><a class="reference internal" href="#id3">可靠性</a></li>
-<li><a class="reference internal" href="#id4">路由</a></li>
-<li><a class="reference internal" href="#id5">安全</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id6">使用客户/服务器模式</a><ul>
-<li><a class="reference internal" href="#id7">服务器端端口号</a></li>
-<li><a class="reference internal" href="#id8">客户端端口号</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#udp">理UDP</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="intro.html"
-                        title="previous chapter">概述</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="../_sources/_src/chapter1.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" size="18" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
