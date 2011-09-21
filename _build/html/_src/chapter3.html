@@ -46,8 +46,13 @@
 <li><a class="reference internal" href="#id2">准备连接</a><ul>
 <li><a class="reference internal" href="#socket">建立 socket 对象</a></li>
 <li><a class="reference internal" href="#id3">设置和得到socket选项</a></li>
+<li><a class="reference internal" href="#id4">绑定 socket</a></li>
+<li><a class="reference internal" href="#id5">侦听连接</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#id6">接受连接</a></li>
+<li><a class="reference internal" href="#udp">使用 UDP</a></li>
+<li><a class="reference internal" href="#inetd-xinetd">使用 inetd 或 xinetd</a></li>
 </ul>
 </li>
 </ul>
@@ -155,7 +160,207 @@
 </tr>
 </tbody>
 </table>
+<p>下面这段代码将打印出Python所支持的 socket 选项：</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    sockopts.py</span>
+<span class="sd">    ~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="sd">    打印Python所支持系统的 socket 选项列表</span>
+<span class="sd">    </span>
+<span class="sd">    :date: 2011-09-21</span>
+<span class="sd">    :from: Python Network Programming</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">socket</span>
+
+<span class="n">solist</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">socket</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;SO_&#39;</span><span class="p">)]</span>
+
+<span class="n">solist</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">solist</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">x</span>
+</pre></div>
+</td></tr></table></div>
 </div>
+<div class="section" id="id4">
+<h3>绑定 socket<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>绑定一个端口号，需要执行下面的命令：</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">bind()</span></tt> 函数的第一个参数是要绑定的IP地址，通常为空，表示可以绑定到所有的接口和地址。</p>
+</div>
+<div class="section" id="id5">
+<h3>侦听连接<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">listen()</span></tt> 允许有多少个未决（等待）的连接在队列中等待。作为一个绽，很多人设置为5。</p>
+</div>
+</div>
+<div class="section" id="id6">
+<h2>接受连接<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>服务器连续运行的办法是小心的设计一个无限循环。这里有一个基本服务器的例子：</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    basicserver.py</span>
+<span class="sd">    ~~~~~~~~~~~~~~~~~~~~</span>
+<span class="sd">    </span>
+<span class="sd">    :date: 2011-09-21</span>
+<span class="sd">    :from: Python Network Programming</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">socket</span>
+
+<span class="n">host</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+<span class="n">port</span> <span class="o">=</span> <span class="mi">51423</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+
+<span class="k">print</span> <span class="s">&quot;Waiting for connections...&quot;</span>
+<span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="n">clientsock</span><span class="p">,</span> <span class="n">clientaddr</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&quot;Got connection from&quot;</span><span class="p">,</span> <span class="n">clientsock</span><span class="o">.</span><span class="n">getpeername</span><span class="p">()</span>
+    <span class="n">clientsock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    
+</pre></div>
+</td></tr></table></div>
+<p>为了测试这个服务器程序，你可以使用 <tt class="docutils literal"><span class="pre">telnet</span> <span class="pre">localhost</span> <span class="pre">51423</span></tt> 进行测试。</p>
+</div>
+<div class="section" id="udp">
+<h2>使用 UDP<a class="headerlink" href="#udp" title="Permalink to this headline">¶</a></h2>
+<p>这个代码用来测试UDP客户端</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    udpechoserver.py</span>
+<span class="sd">    ~~~~~~~~~~~~~~~~~~~~</span>
+<span class="sd">    </span>
+<span class="sd">    :date: 2011-09-21</span>
+<span class="sd">    :from: Python Network Programming</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+
+<span class="n">host</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+<span class="n">port</span> <span class="o">=</span> <span class="mi">51423</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+
+<span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">message</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">8192</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;Got data from&quot;</span><span class="p">,</span> <span class="n">address</span>
+        <span class="c"># Echo it back</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">):</span>
+        <span class="k">raise</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+        
+</pre></div>
+</td></tr></table></div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">此代码可以第二章的 <tt class="docutils literal"><span class="pre">udp.py</span></tt> 结合起来使用。</p>
+</div>
+</div>
+<div class="section" id="inetd-xinetd">
+<h2>使用 inetd 或 xinetd<a class="headerlink" href="#inetd-xinetd" title="Permalink to this headline">¶</a></h2>
+<p>ubuntu中需要安装 xinetd :</p>
+<div class="highlight-python"><pre>sudo apt-get install xinetd</pre>
+</div>
+<p>配置文件在 <tt class="docutils literal"><span class="pre">/etc/xinetd.d</span></tt> 和 <tt class="docutils literal"><span class="pre">/etc/xinetd.conf</span></tt> 中。</p>
 </div>
 </div>
 
