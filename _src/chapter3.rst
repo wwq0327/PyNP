@@ -96,3 +96,10 @@ A                    B                                          C
 
 使用 inetd 或 xinetd
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ubuntu中需要安装 xinetd :
+::
+
+   sudo apt-get install xinetd
+
+配置文件在 ``/etc/xinetd.d`` 和 ``/etc/xinetd.conf`` 中。
+
