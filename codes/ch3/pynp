@@ -1,0 +1,13 @@
+#tcp
+service pythontestserver
+{
+	flags		= NAMEINARGS
+	type		= UNLISTED
+	port		= 51423
+	socket_type     = stream
+	protocol	= tcp
+	wait		= no
+	user		= root
+	server		= /home/wyatt/git/PyNP/ch3/se1.py
+	server_args	= /home/wyatt/git/PyNP/ch3/se1.py
+}
