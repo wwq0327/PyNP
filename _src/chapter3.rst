@@ -91,3 +91,8 @@ A                    B                                          C
 .. literalinclude:: ../codes/ch3/udpechoserver.py
    :linenos:
 
+.. note::
+   此代码可以第二章的 ``udp.py`` 结合起来使用。
+
+使用 inetd 或 xinetd
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
