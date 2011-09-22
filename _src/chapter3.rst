@@ -132,4 +132,8 @@ Python 提供了一个可以作为系统syslog程序接口的syslog模块。在�
 .. literalinclude:: ../codes/ch3/syslogsample.py
    :linenos:
 
+可以 ``/var/log/syslog`` 查看到错误日志。
+
+避免死锁
+~~~~~~~~~~~~~~~~~
 

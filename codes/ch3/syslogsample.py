@@ -12,6 +12,9 @@
 import syslog, sys, StringIO, traceback, os
 
 def logexception(includetraceback=0):
+    '''traceback激活时，则收集所有错误信息，否则只是简单的记录异常的类型和它的信息.
+    '''
+    
     exctype, exception, exctraceback = sys.exc_info()
     excclass = str(exception.__class__)
     message = str(exception)
