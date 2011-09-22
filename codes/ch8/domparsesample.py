@@ -19,25 +19,33 @@ class SampleScanner:
                 self.handleBook(child)
 
     def gettext(self, nodelist):
+        '''扫描节点，查询文本并建立一个含有这些文本的字符串列表。接着它把这个列表合成一个
+        单独的字符串，并把一个或多个空格字符转成一个单独的空格。
+        '''
+        
         retlist = []
         for node in nodelist:
-            if node.nodeType == Node.TEXT_NODE:
+            if node.nodeType == Node.TEXT_NODE: # 空格
                 retlist.append(node.wholeText)
-            elif node.hasChildNodes:
-                retlist.append(self.gettext(node.childNodes))
+            elif node.hasChildNodes:  # 存在了节点
+                retlist.append(self.gettext(node.childNodes)) # 递归调用本身
 
         return re.sub('\s+', ' ', ''.join(retlist))
 
     def handleBook(self, node):
+        """这段处理<book>的直接子节点。如果发现一个标题，它就打印出来。对于作者和章节，
+        它会调用这些标签相应的处理函数，其它的则它忽略。
+        """
+        
         for child in node.childNodes:
             if child.nodeType != Node.ELEMENT_NODE:
                 continue
             if child.tagName == 'title':
                 print "Book title is:", self.gettext(child.childNodes)
             if child.tagName == 'author':
-                self.handleAuthor(child)
+                self.handleAuthor(child) # 调用作者标签处理函数
             if child.tagName == 'chapter':
-                self.handleChapter(child)
+                self.handleChapter(child) # 调用章节签标处理函数
 
     def handleAuthor(self, node):
         for child in node.childNodes:
