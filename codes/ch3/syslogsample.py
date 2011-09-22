@@ -26,6 +26,9 @@ def logexception(includetraceback=0):
             syslog.syslog(syslog.LOG_ERR, line)
 
 def initsyslog():
+    '''初始化syslog系统，程序名+ID作为日志名称。并记一条信息，说明服务器启动了
+    '''
+    
     syslog.openlog("%s[%d]" % (os.path.basename(sys.argv[0]),
                                                 os.getpid()), 0,
                    syslog.LOG_DAEMON)
