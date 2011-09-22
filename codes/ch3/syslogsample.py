@@ -14,13 +14,13 @@ import syslog, sys, StringIO, traceback, os
 def logexception(includetraceback=0):
     exctype, exception, exctraceback = sys.exc_info()
     excclass = str(exception.__class__)
-    messsage = str(exception)
+    message = str(exception)
 
     if not includetraceback:
         syslog.syslog(syslog.LOG_ERR, "%s: %s" % (excclass, message))
     else:
         excfd = StringIO.StringIO()
-        traceback.pring_exception(exctype, exception, exctraceback, None,
+        traceback.print_exception(exctype, exception, exctraceback, None,
                                   excfd)
         for line in excfd.getvalue().split("\n"):
             syslog.syslog(syslog.LOG_ERR, line)
