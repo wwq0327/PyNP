@@ -104,3 +104,32 @@ ubuntu中需要安装 xinetd :
 
 配置文件在 ``/etc/xinetd.d`` 和 ``/etc/xinetd.conf`` 中。
 
+通过 syslog 来记录日志
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Unix 和类 Unix系统提供了一个称为 syslog 的工具，Python提供了一个很方便的接口。
+
+.. attention::
+  syslog工具是不能在Windows上工作的。如果要在Windows工作，可考虑logging模块和NTEventLogHandler()函数。
+
+在 Python 中使用 syslog
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Python 提供了一个可以作为系统syslog程序接口的syslog模块。在开始记录信息之前，必须用openlog()函数来初始化syslog接口，Python如此定义它：
+
+::
+
+   openlog(ident[, logopt[, facility]])
+
+- 第一个参数， ident， 是一个标识字符串，它会被载入到每一条日志信息中，通常是程序的名称，有时候还包含进程ID。
+
+日志系统初始化后，如想实际记录一条信息，可以调用 ``syslog()`` 函数。Python定义如下：
+::
+ 
+   syslog([priority,] message)
+
+其中 ``message`` 是一个你想记录的简单字符串。 ``priority`` 表明了这条信息的重要性。下面一个是演示 ``syslog`` 用法的例子：
+
+.. literalinclude:: ../codes/ch3/syslogsample.py
+   :linenos:
+
+
