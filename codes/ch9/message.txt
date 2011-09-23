@@ -1,0 +1,12 @@
+Received: By test server from somewhere
+Received: By another server from my machine
+To: wwq0327@gmail.com
+From: wwq0327@gmail.com
+Subject: Test Message, Chapter 9
+Date: Fri, 23 Sep 2011 22:19:21 +0800
+Message-ID: <20110923141921.3508.43675@wyatt-desktop>
+
+Hello,
+This is a test message from Chapter 9. I hope you enjoy it!
+
+-- Anonymous
